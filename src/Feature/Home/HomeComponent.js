@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 /* component */
 import UserInputComponent from './Components/UserInputComponent';
 
 class HomeComponent extends Component {
-  componentDidMount() {}
-
   render() {
     return (
       <div className="container-fluid">
@@ -20,4 +19,13 @@ class HomeComponent extends Component {
   }
 }
 
-export default HomeComponent;
+const mapStateToProps = state => ({
+  formData: state.rootReducer.formDataValue
+});
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HomeComponent);

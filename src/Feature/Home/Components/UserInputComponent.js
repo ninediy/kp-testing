@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
+/* utils */
 import {
   validRequrie,
   validRequrieElm,
@@ -8,27 +10,32 @@ import {
   handleRemoveInputValue
 } from './../../../Utils';
 
-export default class UserInputComponent extends Component {
+/* component */
+import SelectPhoneCodeComponent from './SelectPhoneCodeComponent';
+
+class UserInputComponent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      flag: null
+      title: '',
+      firstname: '',
+      lastname: '',
+      birthday: '',
+      phone_number: '',
+      phone_code: '66'
     };
   }
 
   setFlagValue(e) {
     const val = e.target.value;
     const flag = contries.find(item => item.callingCodes === val);
-    if (flag) {
-      this.setState({ flag: flag.flag });
-    }
   }
 
   recheckValidInput() {
     return {
       title: validRequrieElm('inputTitle'),
-      firatname: validRequrieElm('inputFirstname'),
+      firstname: validRequrieElm('inputFirstname'),
       lastname: validRequrieElm('inputLastname'),
       birthday: validRequrieElm('inputBirthday'),
       phone_number: validRequrieElm('inputPhoneNumber')
@@ -68,7 +75,14 @@ export default class UserInputComponent extends Component {
     });
   }
 
+  onSelectPhoneCode(phoneCode) {
+    this.setState({
+      phone_code: phoneCode
+    });
+  }
+
   render() {
+    const { phone_code } = this.state;
     return (
       <>
         <form>
@@ -282,20 +296,16 @@ export default class UserInputComponent extends Component {
             </div>
           </div>
           <div className="form-group row">
-            <label htmlFor="" className="col-md-2 col-form-label">
-              Mobile-Phone: <span className="text-danger">*</span>
+            <label htmlFor="" className="col-md-1 col-form-label">
+              Phone: <span className="text-danger">*</span>
             </label>
-            <div className="col-2">
-              <select
-                name="input_phone_code"
-                className="form-control"
-                id="inputPhoneCode"
-                onChange={e => {
-                  this.setFlagValue(e);
+            <div className="col-2 pr-0">
+              <SelectPhoneCodeComponent
+                onSelectCode={phoneCode => {
+                  this.onSelectPhoneCode(phoneCode);
                 }}
-              >
-                {this.renderOptPhoneCode()}
-              </select>
+                defaultCode={phone_code}
+              />
             </div>
             <div className="col-4">
               <input
@@ -330,3 +340,14 @@ export default class UserInputComponent extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  formData: state.rootReducer.formDataValue
+});
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserInputComponent);
