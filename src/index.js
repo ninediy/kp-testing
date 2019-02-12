@@ -1,24 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-
 // Store
 import stores from './Store/store';
-
 // Redux
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-
 // Route
 import Web from './Routes/web';
-
 // Global Style
 import './styles/styles.scss';
+
+// LocalStorage
+import { loadState, saveState } from './Store/LocalStorage'
+
+const persistStore = loadState()
 
 // init store
 const store = createStore(
   stores,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  persistStore,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
 
 ReactDOM.render(

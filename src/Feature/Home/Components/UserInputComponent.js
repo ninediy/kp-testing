@@ -7,47 +7,77 @@ import {
   validRequrieElm,
   contries,
   handleLimitChange,
-  handleRemoveInputValue
+  handleRemoveInputValue,
+  isEquivalent,
+  numberOnly
 } from './../../../Utils';
 
 /* component */
 import SelectPhoneCodeComponent from './SelectPhoneCodeComponent';
 
+/* actions */
+import {
+  setDataList,
+  addDataList,
+  setFormData
+} from './../../../Store/actions/AppAction';
+
 class UserInputComponent extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      title: '',
+    this.defaultState = {
+      name_title: '',
       firstname: '',
       lastname: '',
       birthday: '',
+      nationality: '',
+      citizenid: ['', '', '', '', ''],
+      gender: '',
       phone_number: '',
-      phone_code: '66'
+      phone_code: '66',
+      passport_no: '',
+      expected_salary: ''
     };
+
+    this.state = this.defaultState;
   }
 
-  setFlagValue(e) {
-    const val = e.target.value;
-    const flag = contries.find(item => item.callingCodes === val);
+  componentDidMount() {}
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!isEquivalent(prevProps.formData, this.props.formData)) {
+      // if (!isEquivalent(this.props.formData, this.state)) {
+      this.setState(this.props.formData);
+      // }
+    }
+  }
+
+  resetState() {
+    this.setState(this.defaultState);
   }
 
   recheckValidInput() {
-    return {
-      title: validRequrieElm('inputTitle'),
-      firstname: validRequrieElm('inputFirstname'),
-      lastname: validRequrieElm('inputLastname'),
-      birthday: validRequrieElm('inputBirthday'),
-      phone_number: validRequrieElm('inputPhoneNumber')
-    };
+    return [
+      validRequrieElm('inputTitle'),
+      validRequrieElm('inputFirstname'),
+      validRequrieElm('inputLastname'),
+      validRequrieElm('inputBirthday'),
+      validRequrieElm('inputPhoneNumber'),
+      validRequrieElm('inputExpecetedSalary')
+    ];
   }
 
   onSubmit(e) {
     // re-check input is valid...
     const errors = this.recheckValidInput();
-    const isEnabled = !Object.keys(errors).some(x => errors[x]);
+    const errIndex = errors.findIndex(x => x == false);
+    if (errIndex === -1) {
+      this.props.addDataList(this.state);
+      this.resetState();
+      this.recheckValidInput();
+    }
     e.preventDefault();
-    return isEnabled;
   }
 
   renderOptContries() {
@@ -76,13 +106,34 @@ class UserInputComponent extends Component {
   }
 
   onSelectPhoneCode(phoneCode) {
+    this.setState({ phone_code: phoneCode });
+  }
+
+  handleInput(event) {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+
     this.setState({
-      phone_code: phoneCode
+      [name]: value
     });
   }
 
   render() {
-    const { phone_code } = this.state;
+    const {
+      name_title,
+      firstname,
+      lastname,
+      birthday,
+      nationality,
+      citizenid,
+      gender,
+      phone_number,
+      phone_code,
+      passport_no,
+      expected_salary
+    } = this.state;
+
     return (
       <>
         <form>
@@ -93,10 +144,12 @@ class UserInputComponent extends Component {
             </label>
             <div className="col-md-2">
               <select
-                name="input_title"
+                name="name_title"
                 id="inputTitle"
                 className="form-control"
+                value={name_title}
                 onChange={e => {
+                  this.handleInput(e);
                   validRequrie(e);
                 }}
                 onFocus={e => {
@@ -105,8 +158,8 @@ class UserInputComponent extends Component {
                 required
               >
                 <option value="">-- your title --</option>
-                <option value="mr">Mr.</option>
-                <option value="ms">Ms.</option>
+                <option value="mr.">Mr.</option>
+                <option value="ms.">Ms.</option>
               </select>
               <div className="invalid-feedback">Required</div>
             </div>
@@ -120,8 +173,10 @@ class UserInputComponent extends Component {
                 id="inputFirstname"
                 required
                 className="form-control"
-                name="input_firstname"
+                name="firstname"
+                value={firstname}
                 onChange={e => {
+                  this.handleInput(e);
                   validRequrie(e);
                 }}
                 onFocus={e => {
@@ -141,8 +196,10 @@ class UserInputComponent extends Component {
                 id="inputLastname"
                 required
                 className="form-control"
-                name="input_lastname"
+                name="lastname"
+                value={lastname}
                 onChange={e => {
+                  this.handleInput(e);
                   validRequrie(e);
                 }}
                 onFocus={e => {
@@ -160,13 +217,15 @@ class UserInputComponent extends Component {
             <div className="col-md-3">
               <input
                 type="date"
+                value={birthday}
                 onChange={e => {
+                  this.handleInput(e);
                   validRequrie(e);
                 }}
                 onFocus={e => {
                   validRequrie(e);
                 }}
-                name="input_birthday"
+                name="birthday"
                 id="inputBirthday"
                 className="form-control"
                 required
@@ -179,9 +238,13 @@ class UserInputComponent extends Component {
             </label>
             <div className="col-md-7">
               <select
-                name="input_nation"
+                name="nationality"
                 id="inputNation"
                 className="form-control"
+                value={nationality}
+                onChange={e => {
+                  this.handleInput(e);
+                }}
               >
                 {this.renderOptContries()}
               </select>
@@ -196,9 +259,20 @@ class UserInputComponent extends Component {
               <input
                 type="text"
                 id="inputCitizen1"
-                onChange={() =>
-                  handleLimitChange('inputCitizen1', 'inputCitizen2', 1)
-                }
+                name="citizenid"
+                value={citizenid[0]}
+                onChange={e => {
+                  this.setState({
+                    citizenid: [
+                      e.target.value,
+                      citizenid[1],
+                      citizenid[2],
+                      citizenid[3],
+                      citizenid[4]
+                    ]
+                  });
+                  handleLimitChange('inputCitizen1', 'inputCitizen2', 1);
+                }}
                 maxLength="1"
                 className="form-control text-center"
               />
@@ -208,9 +282,20 @@ class UserInputComponent extends Component {
               <input
                 type="text"
                 id="inputCitizen2"
-                onChange={() =>
-                  handleLimitChange('inputCitizen2', 'inputCitizen3', 4)
-                }
+                name="citizenid"
+                value={citizenid[1]}
+                onChange={e => {
+                  this.setState({
+                    citizenid: [
+                      citizenid[0],
+                      e.target.value,
+                      citizenid[2],
+                      citizenid[3],
+                      citizenid[4]
+                    ]
+                  });
+                  handleLimitChange('inputCitizen2', 'inputCitizen3', 4);
+                }}
                 onKeyDown={e => handleRemoveInputValue(e, 'inputCitizen1')}
                 maxLength="4"
                 className="form-control text-center"
@@ -220,10 +305,21 @@ class UserInputComponent extends Component {
             <div className="col-2">
               <input
                 type="text"
+                name="citizenid"
                 id="inputCitizen3"
-                onChange={() =>
-                  handleLimitChange('inputCitizen3', 'inputCitizen4', 4)
-                }
+                value={citizenid[2]}
+                onChange={e => {
+                  this.setState({
+                    citizenid: [
+                      citizenid[0],
+                      citizenid[1],
+                      e.target.value,
+                      citizenid[3],
+                      citizenid[4]
+                    ]
+                  });
+                  handleLimitChange('inputCitizen3', 'inputCitizen4', 4);
+                }}
                 onKeyDown={e => handleRemoveInputValue(e, 'inputCitizen2')}
                 maxLength="4"
                 className="form-control text-center"
@@ -233,10 +329,21 @@ class UserInputComponent extends Component {
             <div className="col-2">
               <input
                 type="text"
+                name="citizenid"
                 id="inputCitizen4"
-                onChange={() =>
-                  handleLimitChange('inputCitizen4', 'inputCitizen5', 3)
-                }
+                value={citizenid[3]}
+                onChange={e => {
+                  this.setState({
+                    citizenid: [
+                      citizenid[0],
+                      citizenid[1],
+                      citizenid[2],
+                      e.target.value,
+                      citizenid[4]
+                    ]
+                  });
+                  handleLimitChange('inputCitizen4', 'inputCitizen5', 3);
+                }}
                 onKeyDown={e => handleRemoveInputValue(e, 'inputCitizen3')}
                 maxLength="3"
                 className="form-control text-center"
@@ -246,8 +353,21 @@ class UserInputComponent extends Component {
             <div className="col-1">
               <input
                 type="text"
+                name="citizenid"
                 id="inputCitizen5"
-                onChange={() => handleLimitChange('inputCitizen5', null, 1)}
+                value={citizenid[4]}
+                onChange={e => {
+                  this.setState({
+                    citizenid: [
+                      citizenid[0],
+                      citizenid[1],
+                      citizenid[2],
+                      citizenid[3],
+                      e.target.value
+                    ]
+                  });
+                  handleLimitChange('inputCitizen5', null, 1);
+                }}
                 onKeyDown={e => handleRemoveInputValue(e, 'inputCitizen4')}
                 maxLength="1"
                 className="form-control text-center"
@@ -263,7 +383,9 @@ class UserInputComponent extends Component {
                 type="radio"
                 className="form-check-input"
                 id="inputCheck1"
-                name="input_gender"
+                name="gender"
+                checked={gender === 'male'}
+                onChange={e => this.handleInput(e)}
                 value="male"
               />
               <label className="form-check-label" htmlFor="inputCheck1">
@@ -275,7 +397,9 @@ class UserInputComponent extends Component {
                 type="radio"
                 className="form-check-input"
                 id="inputCheck2"
-                name="input_gender"
+                name="gender"
+                checked={gender === 'female'}
+                onChange={e => this.handleInput(e)}
                 value="female"
               />
               <label className="form-check-label" htmlFor="inputCheck2">
@@ -287,7 +411,9 @@ class UserInputComponent extends Component {
                 type="radio"
                 className="form-check-input"
                 id="inputCheck3"
-                name="input_gender"
+                name="gender"
+                checked={gender === 'unisex'}
+                onChange={e => this.handleInput(e)}
                 value="unisex"
               />
               <label className="form-check-label" htmlFor="inputCheck3">
@@ -310,18 +436,67 @@ class UserInputComponent extends Component {
             <div className="col-4">
               <input
                 type="text"
-                name="input_phone_number"
+                name="phone_number"
                 id="inputPhoneNumber"
                 className="form-control"
+                value={phone_number}
                 onChange={e => {
+                  this.handleInput(e);
                   validRequrie(e);
                 }}
                 onFocus={e => {
                   validRequrie(e);
                 }}
+                onKeyPress={e => numberOnly(e)}
                 required
               />
-              <div className="invalid-feedback">Required</div>
+              <div className="invalid-feedback">Required and numuric only</div>
+            </div>
+          </div>
+          <div className="form-group row">
+            <label htmlFor="inputPassport" className="col-md-1 col-form-label">
+              Passport No:
+            </label>
+            <div className="col-md-4">
+              <input
+                type="text"
+                id="inputPassport"
+                name="passport_no"
+                className="form-control"
+                value={passport_no}
+                onChange={e => this.handleInput(e)}
+              />
+            </div>
+          </div>
+          <div className="form-group row">
+            <label
+              htmlFor="inputExpecetedSalary"
+              className="col-md-1 col-form-label"
+            >
+              Expected Salary: <span className="text-danger">*</span>
+            </label>
+            <div className="col-md-4 col-11">
+              <input
+                type="text"
+                id="inputExpecetedSalary"
+                name="expected_salary"
+                className="form-control"
+                value={expected_salary}
+                onChange={e => {
+                  this.handleInput(e);
+                  validRequrie(e);
+                }}
+                onFocus={e => {
+                  validRequrie(e);
+                }}
+                onKeyPress={e => numberOnly(e)}
+                required
+              />
+
+              <div className="invalid-feedback">Required and numuric only</div>
+            </div>
+            <div className="col-1">
+              <label className="col-form-label">THB</label>
             </div>
           </div>
           <div className="form-group row">
@@ -342,10 +517,15 @@ class UserInputComponent extends Component {
 }
 
 const mapStateToProps = state => ({
-  formData: state.rootReducer.formDataValue
+  formData: state.rootReducer.formDataValue,
+  dataStore: state.rootReducer.dataStore
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setFormData,
+  setDataList,
+  addDataList
+};
 
 export default connect(
   mapStateToProps,

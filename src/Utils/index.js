@@ -54,6 +54,41 @@ export const getId = id => {
   return document.getElementById(id);
 };
 
+export const isEquivalent = (a, b) => {
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length !== bProps.length) {
+    return false;
+  }
+
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+
+    if (a[propName] !== b[propName]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const numberOnly = event => {
+  var keycode = event.keyCode || event.charCode;
+  if (
+    !(
+      event.shiftKey === false &&
+      (keycode === 46 ||
+        keycode === 8 ||
+        keycode === 37 ||
+        keycode === 39 ||
+        (keycode >= 48 && keycode <= 57))
+    )
+  ) {
+    event.preventDefault();
+  }
+};
+
 export const contries = [
   {
     name: 'Afghanistan',
