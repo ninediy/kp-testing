@@ -28,6 +28,10 @@ export const validRequrieElm = id => {
   }
 };
 
+export const getUnixTimestamp = () => {
+  return Math.round(new Date().getTime() / 1000);
+};
+
 export const handleLimitChange = (cur_id, next_id, limit = 1) => {
   if (cur_id) {
     const elm = document.getElementById(cur_id);

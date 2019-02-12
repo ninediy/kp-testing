@@ -15,6 +15,7 @@ class HomeComponent extends Component {
             <UserInputComponent />
           </div>
         </div>
+        <hr />
         <TableStoreComponent />
       </div>
     );

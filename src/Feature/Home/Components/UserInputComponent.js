@@ -9,7 +9,8 @@ import {
   handleLimitChange,
   handleRemoveInputValue,
   isEquivalent,
-  numberOnly
+  numberOnly,
+  getUnixTimestamp
 } from './../../../Utils';
 
 /* component */
@@ -38,7 +39,8 @@ class UserInputComponent extends Component {
       phone_number: '',
       phone_code: '66',
       passport_no: '',
-      expected_salary: ''
+      expected_salary: '',
+      timestamp: ''
     };
 
     this.state = this.defaultState;
@@ -56,6 +58,9 @@ class UserInputComponent extends Component {
       !isEquivalent(prevProps.formData, this.props.formData)
     ) {
       this.setState(this.props.formData);
+      setTimeout(() => {
+        this.recheckValidInput();
+      }, 100);
     }
   }
 
@@ -79,17 +84,23 @@ class UserInputComponent extends Component {
     const errors = this.recheckValidInput();
     const errIndex = errors.findIndex(x => x == false);
     if (errIndex === -1) {
-      if (window.confirm('ยืนยันการบักทึกข้อมูล')) {
-        if (this.props.dataIndex !== null && this.props.dataIndex !== '') {
-          const dataStore = this.props.dataStore;
-          dataStore[this.props.dataIndex] = this.state;
-          this.props.setDataList(dataStore);
-          this.doCancel();
-        } else {
-          this.props.addDataList(this.state);
-        }
+      if (this.props.dataIndex !== null && this.props.dataIndex !== '') {
+        const dataStore = this.props.dataStore;
+        const findex = dataStore.findIndex(
+          item => item.timestamp === this.state.timestamp
+        );
+        dataStore[findex] = this.state;
+        this.props.setDataList(dataStore);
+        this.doCancel();
+      } else {
         this.resetState();
-        document.getElementById('form-box').reset();
+        this.props.addDataList(
+          Object.assign(this.state, { timestamp: getUnixTimestamp() })
+        );
+        setTimeout(() => {
+          this.recheckValidInput();
+          document.getElementById('form-box').reset();
+        }, 100);
       }
     }
     e.preventDefault();
@@ -127,7 +138,10 @@ class UserInputComponent extends Component {
     this.resetState();
     this.props.setFormData('');
     this.props.setDataIndex('');
-    document.getElementById('form-box').reset();
+    setTimeout(() => {
+      this.recheckValidInput();
+      document.getElementById('form-box').reset();
+    }, 100);
   }
 
   render() {
