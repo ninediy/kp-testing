@@ -40,7 +40,8 @@ class UserInputComponent extends Component {
       phone_code: '66',
       passport_no: '',
       expected_salary: '',
-      timestamp: ''
+      timestamp: '',
+      checked: false
     };
 
     this.state = this.defaultState;
@@ -82,7 +83,7 @@ class UserInputComponent extends Component {
   onSubmit(e) {
     // re-check input is valid...
     const errors = this.recheckValidInput();
-    const errIndex = errors.findIndex(x => x == false);
+    const errIndex = errors.findIndex(x => x === false);
     if (errIndex === -1) {
       if (this.props.dataIndex !== null && this.props.dataIndex !== '') {
         const dataStore = this.props.dataStore;

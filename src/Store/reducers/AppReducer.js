@@ -3,14 +3,16 @@ import {
   SET_FORM_DATA,
   ADD_DATA_LISTS,
   SET_DATA_LISTS,
-  SET_DATA_INDEX
+  SET_DATA_INDEX,
+  SET_SELECT_ALL
 } from '../TypeStore';
 
 const initialState = {
   appName: '',
   formDataValue: null,
   dataStore: [],
-  dataIndex: null
+  dataIndex: null,
+  selectAll: false
 };
 
 export default (state = initialState, { type, value }) => {
@@ -25,6 +27,8 @@ export default (state = initialState, { type, value }) => {
       return { ...state, dataStore: value };
     case SET_DATA_INDEX:
       return { ...state, dataIndex: value };
+    case SET_SELECT_ALL:
+      return { ...state, selectAll: value };
     default:
       return state;
   }
