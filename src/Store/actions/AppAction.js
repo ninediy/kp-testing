@@ -2,7 +2,8 @@ import {
   SET_APP_NAME,
   SET_FORM_DATA,
   ADD_DATA_LISTS,
-  SET_DATA_LISTS
+  SET_DATA_LISTS,
+  SET_DATA_INDEX
 } from '../TypeStore';
 
 export const setAppName = value => ({
@@ -22,5 +23,10 @@ export const addDataList = value => ({
 
 export const setDataList = value => ({
   type: SET_DATA_LISTS,
+  value: value
+});
+
+export const setDataIndex = value => ({
+  type: SET_DATA_INDEX,
   value: value
 });

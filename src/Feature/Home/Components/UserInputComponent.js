@@ -19,7 +19,8 @@ import SelectPhoneCodeComponent from './SelectPhoneCodeComponent';
 import {
   setDataList,
   addDataList,
-  setFormData
+  setFormData,
+  setDataIndex
 } from './../../../Store/actions/AppAction';
 
 class UserInputComponent extends Component {
@@ -43,13 +44,18 @@ class UserInputComponent extends Component {
     this.state = this.defaultState;
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    if (this.props.formData) {
+      this.setState(this.props.formData);
+    }
+  }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!isEquivalent(prevProps.formData, this.props.formData)) {
-      // if (!isEquivalent(this.props.formData, this.state)) {
+    if (
+      this.props.formData &&
+      !isEquivalent(prevProps.formData, this.props.formData)
+    ) {
       this.setState(this.props.formData);
-      // }
     }
   }
 
@@ -73,9 +79,18 @@ class UserInputComponent extends Component {
     const errors = this.recheckValidInput();
     const errIndex = errors.findIndex(x => x == false);
     if (errIndex === -1) {
-      this.props.addDataList(this.state);
-      this.resetState();
-      this.recheckValidInput();
+      if (window.confirm('ยืนยันการบักทึกข้อมูล')) {
+        if (this.props.dataIndex !== null && this.props.dataIndex !== '') {
+          const dataStore = this.props.dataStore;
+          dataStore[this.props.dataIndex] = this.state;
+          this.props.setDataList(dataStore);
+          this.doCancel();
+        } else {
+          this.props.addDataList(this.state);
+        }
+        this.resetState();
+        document.getElementById('form-box').reset();
+      }
     }
     e.preventDefault();
   }
@@ -83,23 +98,12 @@ class UserInputComponent extends Component {
   renderOptContries() {
     return contries.map((item, key) => {
       return (
-        <option key={item.alpha3Code + '_' + key} value={item.alpha3Code}>
-          {item.name}
-        </option>
-      );
-    });
-  }
-
-  renderOptPhoneCode() {
-    return contries.map((item, key) => {
-      return (
         <option
-          className="imagebacked"
-          key={item.callingCodes + '_' + key}
-          value={item.callingCodes}
-          data-flag={item.flag}
+          key={item.alpha3Code + '_' + key}
+          phonecode={item.callingCodes}
+          value={item.alpha3Code}
         >
-          {'+' + item.callingCodes + ' ' + item.name}
+          {item.name}
         </option>
       );
     });
@@ -119,6 +123,13 @@ class UserInputComponent extends Component {
     });
   }
 
+  doCancel() {
+    this.resetState();
+    this.props.setFormData('');
+    this.props.setDataIndex('');
+    document.getElementById('form-box').reset();
+  }
+
   render() {
     const {
       name_title,
@@ -136,7 +147,7 @@ class UserInputComponent extends Component {
 
     return (
       <>
-        <form>
+        <form id="form-box">
           <div className="form-group row">
             {/* input title */}
             <label htmlFor="inputTitle" className="col-md-1 col-form-label">
@@ -243,6 +254,11 @@ class UserInputComponent extends Component {
                 className="form-control"
                 value={nationality}
                 onChange={e => {
+                  this.setState({
+                    phone_code: contries.find(
+                      resp => resp.alpha3Code === e.target.value
+                    ).callingCodes
+                  });
                   this.handleInput(e);
                 }}
               >
@@ -501,13 +517,35 @@ class UserInputComponent extends Component {
           </div>
           <div className="form-group row">
             <div className="col-12 text-right">
-              <button
-                className="btn btn-outline-primary"
-                type="button"
-                onClick={e => this.onSubmit(e)}
-              >
-                SUBMIT
-              </button>
+              {this.props.formData ? (
+                <>
+                  <button
+                    className="btn btn-outline-dark"
+                    type="button"
+                    onClick={() => {
+                      this.doCancel();
+                    }}
+                  >
+                    CANCEL
+                  </button>
+                  &nbsp;
+                  <button
+                    type="button"
+                    onClick={e => this.onSubmit(e)}
+                    className="btn btn-outline-success"
+                  >
+                    SAVE
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="btn btn-outline-primary"
+                  type="button"
+                  onClick={e => this.onSubmit(e)}
+                >
+                  SUBMIT
+                </button>
+              )}
             </div>
           </div>
         </form>
@@ -518,13 +556,15 @@ class UserInputComponent extends Component {
 
 const mapStateToProps = state => ({
   formData: state.rootReducer.formDataValue,
-  dataStore: state.rootReducer.dataStore
+  dataStore: state.rootReducer.dataStore,
+  dataIndex: state.rootReducer.dataIndex
 });
 
 const mapDispatchToProps = {
   setFormData,
   setDataList,
-  addDataList
+  addDataList,
+  setDataIndex
 };
 
 export default connect(

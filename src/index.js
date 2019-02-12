@@ -12,16 +12,20 @@ import Web from './Routes/web';
 import './styles/styles.scss';
 
 // LocalStorage
-import { loadState, saveState } from './Store/LocalStorage'
+import { loadState, saveState } from './Store/LocalStorage';
 
-const persistStore = loadState()
+const persistStore = loadState();
 
 // init store
 const store = createStore(
   stores,
   persistStore,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
+
+store.subscribe(() => {
+  saveState(store.getState());
+});
 
 ReactDOM.render(
   <Provider store={store}>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import TableStoreComponent from './Components/TableStoreComponent';
 
 /* component */
 import UserInputComponent from './Components/UserInputComponent';
@@ -14,6 +15,7 @@ class HomeComponent extends Component {
             <UserInputComponent />
           </div>
         </div>
+        <TableStoreComponent />
       </div>
     );
   }

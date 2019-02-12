@@ -2,25 +2,15 @@ import {
   SET_APP_NAME,
   SET_FORM_DATA,
   ADD_DATA_LISTS,
-  SET_DATA_LISTS
+  SET_DATA_LISTS,
+  SET_DATA_INDEX
 } from '../TypeStore';
 
 const initialState = {
   appName: '',
-  formDataValue: {
-    name_title: '',
-    firstname: '',
-    lastname: '',
-    birthday: '',
-    nationality: '',
-    citizenid: [],
-    gender: '',
-    phone_number: '',
-    phone_code: '66',
-    passport_no: '',
-    expected_salary: ''
-  },
-  dataStore: []
+  formDataValue: null,
+  dataStore: [],
+  dataIndex: null
 };
 
 export default (state = initialState, { type, value }) => {
@@ -33,6 +23,8 @@ export default (state = initialState, { type, value }) => {
       return { ...state, dataStore: [...state.dataStore, value] };
     case SET_DATA_LISTS:
       return { ...state, dataStore: value };
+    case SET_DATA_INDEX:
+      return { ...state, dataIndex: value };
     default:
       return state;
   }
