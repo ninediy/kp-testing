@@ -1,16 +1,21 @@
 # KPC-Testing
 
+before runing project please install dependency
+```
+$ npm install
+```
+
 how to runing project
 ```
-npm start
+$ npm start
 ```
 or 
 ```
-yarn start
+$ yarn start
 ```
 # Format code
 ```
-yarn fcode or npm run fcode 
+$ yarn fcode or npm run fcode 
 ```
 # Plugin
 - __React loadable (for code spliting)__
