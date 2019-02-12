@@ -19,5 +19,5 @@ const saveState = state => {
     console.log(error.message);
   }
 };
-    
+
 export { loadState, saveState };

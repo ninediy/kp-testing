@@ -8,7 +8,7 @@ function SelectPhoneCodeComponent(props) {
 
   useEffect(() => {
     if (props.defaultCode) {
-        doFindFlag(props.defaultCode)
+      doFindFlag(props.defaultCode);
     }
   });
 

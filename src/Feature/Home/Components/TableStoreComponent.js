@@ -66,43 +66,53 @@ class TableStoreComponent extends Component {
   irenderTableBody() {
     const { arr_start, arr_end } = this.state;
     const { dataStore } = this.props;
-    return dataStore.slice(arr_start, arr_end).map((item, key) => {
+    if (dataStore.length > 0) {
+      return dataStore.slice(arr_start, arr_end).map((item, key) => {
+        return (
+          <tr key={key}>
+            <td className="text-center">
+              <input
+                type="checkbox"
+                className="table-checkbox"
+                onChange={e => this.handleChecked(e, item)}
+                checked={item.checked}
+              />
+            </td>
+            <td>{item.firstname + ' ' + item.lastname}</td>
+            <td>{item.gender}</td>
+            <td>{'+' + item.phone_code + item.phone_number}</td>
+            <td>{item.nationality}</td>
+            <td>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => {
+                  this.doEdit(item, key);
+                }}
+              >
+                EDIT
+              </button>
+              &nbsp;|&nbsp;
+              <button
+                className="btn btn-sm btn-danger"
+                onClick={() => {
+                  this.doDelete(item);
+                }}
+              >
+                DELETE
+              </button>
+            </td>
+          </tr>
+        );
+      });
+    } else {
       return (
-        <tr key={key}>
-          <td className="text-center">
-            <input
-              type="checkbox"
-              className="table-checkbox"
-              onChange={e => this.handleChecked(e, item)}
-              checked={item.checked}
-            />
-          </td>
-          <td>{item.firstname + ' ' + item.lastname}</td>
-          <td>{item.gender}</td>
-          <td>{'+' + item.phone_code + item.phone_number}</td>
-          <td>{item.nationality}</td>
-          <td>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => {
-                this.doEdit(item, key);
-              }}
-            >
-              EDIT
-            </button>
-            &nbsp;|&nbsp;
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => {
-                this.doDelete(item);
-              }}
-            >
-              DELETE
-            </button>
+        <tr>
+          <td colspan="6" className="text-center">
+            <b>ไม่มีข้อมูล</b>
           </td>
         </tr>
       );
-    });
+    }
   }
 
   onSelectPage(page) {
